@@ -6,14 +6,14 @@ def receive():
     while True:
         try:
             message = client.recv(1024).decode()
-            message_list.insert(tkinter.END, message)
+            message_list.insert(tkinter.END, 'Response: ' + message)
         except:
             break
 
 def send(event=None):
     message = my_message.get()
     my_message.set("")
-    message_list.insert(tkinter.END, "You: " + message)  # Отображение отправленного сообщения
+    message_list.insert(tkinter.END, "Request: " + message)
     client.send(message.encode())
     if message == "exit":
         client.close()
