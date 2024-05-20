@@ -10,7 +10,7 @@ def receive():
         except:
             break
 
-def send(event=None):
+def send():
     message = my_message.get()
     my_message.set("")
     message_list.insert(tkinter.END, "Request: " + message)
@@ -26,18 +26,18 @@ client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect((HOST, PORT))
 
 window = tkinter.Tk()
-window.title("Client Messenger")
+window.title("Мессенджер")
 
 message_list = tkinter.Listbox(window)
 message_list.pack()
 
 my_message = tkinter.StringVar()
-my_message.set("Enter message")
+my_message.set("Введите сообщение")
 message_entry = tkinter.Entry(window, textvariable=my_message)
 message_entry.pack()
 message_entry.bind("<Return>", send)
 
-send_button = tkinter.Button(window, text="Send", command=send)
+send_button = tkinter.Button(window, text="Отправить", command=send)
 send_button.pack()
 
 receive_thread = threading.Thread(target=receive)
