@@ -13,6 +13,7 @@ def receive():
 def send(event=None):
     message = my_message.get()
     my_message.set("")
+    message_list.insert(tkinter.END, "You: " + message)  # Отображение отправленного сообщения
     client.send(message.encode())
     if message == "exit":
         client.close()
