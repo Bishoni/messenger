@@ -1,25 +1,43 @@
 import socket
+import threading
 
 HOST = '192.168.0.99'
 PORT = 12345
 
-with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-    print(f'Создание сервера на хосте: {HOST}')
-    s.bind((HOST, PORT))
-    s.listen()
-    print('Успешно!')
-    conn, addr = s.accept()
+server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+server.bind((HOST, PORT))
+server.listen()
 
-    with conn:
-        print(f'Соединение установлено: IP: {addr[0]}, PORT: {addr[1]}\nОжидание запроса от {addr[0]}')
+clients = []
 
-        while True:
-            data = conn.recv(1024)
-            print(f'Получен запрос: {data.decode()}')
-            if not data:
-                print('Соединение разорвано!')
-                break
-            response = input('Введите ответ: ')
-            conn.sendall(response.encode())
-            print(f'Успешно отправлен!')
-            
+
+def handle_client(client, addr):
+    while True:
+        try:
+            message = client.recv(1024).decode()
+            broadcast(message, client)
+        except:
+            index = clients.index(client)
+            clients.remove(client)
+            client.close()
+            break
+
+
+def broadcast(message, sender):
+    for client in clients:
+        if client != sender:
+            try:
+                client.send(message.encode())
+            except:
+                client.close()
+                clients.remove(client)
+
+def start_server():
+    while True:
+        client, addr = server.accept()
+        clients.append(client)
+        print(f"Connection established with {addr}")
+        thread = threading.Thread(target=handle_client, args=(client, addr))
+        thread.start()
+
+start_server()
