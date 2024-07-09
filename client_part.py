@@ -2,18 +2,21 @@ import socket
 import threading
 import tkinter
 
-
-HOST = '192.168.0.99'
+HOST = '192.168.0.30'
 PORT = 12345
 
 
 def receive():
+    last_message = client.recv(1024).decode()
+    message_list.insert(tkinter.END, last_message)
     while True:
-        message = client.recv(1024).decode()
-        print(message)
+        new_message = client.recv(1024).decode()
+        if new_message != last_message:
+            message_list.insert(tkinter.END, new_message)
+            last_message = new_message
 
 
-def send(event=None):
+def send():
     message = my_message.get()
     my_message.set("")
     message_list.insert(tkinter.END, "Me: " + message)
