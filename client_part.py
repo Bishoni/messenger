@@ -3,7 +3,7 @@ import threading
 import tkinter
 
 
-HOST = '192.168.0.99'
+HOST = '192.168.0.30'
 PORT = 12345
 
 
@@ -29,7 +29,7 @@ def send(event=None):
 
 
 def request_client_count():
-    client.send("client_count:".encode())
+    client.send("client_count".encode())
     count = client.recv(1024).decode()
     return count
 
