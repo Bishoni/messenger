@@ -24,16 +24,6 @@ def handle_client(client, addr):
         print(f"Соединение было разорвано с {addr}")
         clients.remove(client)
         client.close()
-        broadcast_client_count()
-
-
-def broadcast_client_count():
-    global clients
-    for client in clients:
-        try:
-            client.send(f"client_count:{len(clients)}".encode())
-        except Exception as e:
-            print(e)
 
 
 def broadcast(message, sender):

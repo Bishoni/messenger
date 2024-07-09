@@ -11,11 +11,7 @@ def receive():
     while True:
         try:
             message = client.recv(1024).decode()
-            if message.startswith("client_count:"):
-                count_users.set(f"Количество подключенных пользователей: {message.split(':')[1]}")
-            else:
-                window.after(0, message_list.insert, tkinter.END, message)
-            set_name.set(set_username())
+            window.after(0, message_list.insert, tkinter.END, message)
         except Exception as e:
             print(e)
             break
@@ -28,11 +24,6 @@ def send(event=None):
     client.send(f'{set_username()}: {message}'.encode())
 
 
-def request_client_count():
-    client.send("client_count".encode())
-    count = client.recv(1024).decode()
-    return count
-
 
 def disconnect():
     client.send('disconnect'.encode())
@@ -43,7 +34,7 @@ def disconnect():
 def set_username():
     username = set_name.get()
     if not username:
-        username = f'User{request_client_count()}'
+        username = f'Введите имя пользователя'
     return username
 
 
@@ -60,11 +51,6 @@ message_entry.pack()
 
 message_list = tkinter.Listbox(window)
 message_list.pack()
-
-count_users = tkinter.StringVar()
-count_users.set(request_client_count())
-count_users_label = tkinter.Label(window, textvariable=count_users)
-count_users_label.pack()
 
 my_message = tkinter.StringVar()
 my_message.set("Введите сообщение")
