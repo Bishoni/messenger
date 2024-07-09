@@ -11,6 +11,7 @@ def receive():
     while True:
         message = client.recv(1024).decode()
         print(message)
+        window.after(0, message_list.insert, tkinter.END, message)
 
 
 def send(event=None):
