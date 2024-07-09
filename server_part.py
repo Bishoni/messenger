@@ -7,14 +7,11 @@ clients = []
 
 
 def handle_client(client, addr):
-    global clients
     clients.append(client)
     try:
         while True:
             message = client.recv(1024).decode()
-            if message == 'client_count':
-                client.send(str(len(clients)).encode())
-            elif message == 'disconnect':
+            if message == 'disconnect':
                 print(f'Клиент {addr} разорвал настоящее соединение')
             else:
                 broadcast(message, client)
@@ -32,7 +29,6 @@ def broadcast(message, sender):
             try:
                 client.send(message.encode())
             except Exception:
-                print(f'Клиент {client} был отключён!')
                 client.close()
                 clients.remove(client)
 

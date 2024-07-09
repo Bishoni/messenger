@@ -3,26 +3,22 @@ import threading
 import tkinter
 
 
-HOST = '192.168.0.30'
+HOST = '192.168.0.99'
 PORT = 12345
 
 
 def receive():
     while True:
-        try:
-            message = client.recv(1024).decode()
-            window.after(0, message_list.insert, tkinter.END, message)
-        except Exception as e:
-            print(e)
-            break
+        message = client.recv(1024).decode()
+        print(message)
+        window.after(0, message_list.insert, tkinter.END, message)
 
 
-def send(event=None):
+def send():
     message = my_message.get()
     my_message.set("")
     message_list.insert(tkinter.END, "Me: " + message)
     client.send(f'{set_username()}: {message}'.encode())
-
 
 
 def disconnect():
@@ -46,8 +42,8 @@ window.title("Мессенджер")
 
 set_name = tkinter.StringVar()
 set_name.set(set_username())
-message_entry = tkinter.Entry(window, textvariable=set_name)
-message_entry.pack()
+name_button = tkinter.Entry(window, textvariable=set_name)
+name_button.pack()
 
 message_list = tkinter.Listbox(window)
 message_list.pack()
