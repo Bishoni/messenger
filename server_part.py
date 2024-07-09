@@ -3,24 +3,25 @@ import threading
 
 HOST = '192.168.0.99'
 PORT = 12345
-
-server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-server.bind((HOST, PORT))
-server.listen()
-
 clients = []
 
 
 def handle_client(client, addr):
-    while True:
-        try:
+    global clients
+    clients.append(client)
+    try:
+        while True:
             message = client.recv(1024).decode()
-            broadcast(message, client)
-        except:
-            index = clients.index(client)
-            clients.remove(client)
-            client.close()
-            break
+            if message == 'client_count':
+                client.send(str(len(clients)).encode())
+            else:
+                broadcast(message, client)
+    except Exception as e:
+        print(e)
+    finally:
+        print(f"Соединение было разорвано с {addr}")
+        clients.remove(client)
+        client.close()
 
 
 def broadcast(message, sender):
@@ -28,16 +29,24 @@ def broadcast(message, sender):
         if client != sender:
             try:
                 client.send(message.encode())
-            except:
+            except Exception:
+                print(f'Клиент {client} был отключён!')
                 client.close()
                 clients.remove(client)
 
+
 def start_server():
+    server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server.bind((HOST, PORT))
+    server.listen()
+
     while True:
         client, addr = server.accept()
         clients.append(client)
-        print(f"Connection established with {addr}")
+        print(f"Соединение установлено с {addr}")
         thread = threading.Thread(target=handle_client, args=(client, addr))
         thread.start()
 
+
 start_server()
+
