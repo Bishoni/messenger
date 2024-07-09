@@ -1,7 +1,7 @@
 import socket
 import threading
 
-HOST = '192.168.0.99'
+HOST = '192.168.0.30'
 PORT = 12345
 clients = []
 
@@ -11,7 +11,7 @@ def handle_client(client, addr):
     try:
         while True:
             message = client.recv(1024).decode()
-            print(f'{client} отправил сообщение {message}')
+            print(f'{addr} отправил сообщение {message}')
             if message == 'disconnect':
                 print(f'Клиент {addr} разорвал настоящее соединение')
                 break
