@@ -1,26 +1,26 @@
 import socket
 import threading
 
-HOST = '192.168.0.30'
+HOST = '192.168.0.99'
 PORT = 12345
 clients = []
 
-
+# TODO: Сделать корректный вывод в консоль сервера о отправке сообщений. И от отключений пользователей
 def handle_client(client, addr):
     clients.append(client)
     try:
         while True:
             message = client.recv(1024).decode()
-            user_name = f'{message.split(':')[0]} ({addr}) '
-            print(f'{user_name} отправил сообщение {message}')
+            print(f'{addr} отправил сообщение {message}')
             if message == 'disconnect':
-                print(f'Клиент {user_name} разорвал настоящее соединение')
+                print(f'Клиент {addr} разорвал настоящее соединение')
                 break
             else:
                 broadcast(message, client)
     except Exception as e:
         print(e)
     finally:
+        # Вот в этой строке
         print(f"Соединение было разорвано с {addr}")
         clients.remove(client)
         client.close()
