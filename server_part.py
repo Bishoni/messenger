@@ -11,9 +11,10 @@ def handle_client(client, addr):
     try:
         while True:
             message = client.recv(1024).decode()
-            print(f'{addr} отправил сообщение {message}')
+            user_name = f'{message.split(':')[0]} ({addr}) '
+            print(f'{user_name} отправил сообщение {message}')
             if message == 'disconnect':
-                print(f'Клиент {addr} разорвал настоящее соединение')
+                print(f'Клиент {user_name} разорвал настоящее соединение')
                 break
             else:
                 broadcast(message, client)
