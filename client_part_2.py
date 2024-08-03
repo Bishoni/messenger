@@ -7,16 +7,13 @@ from tkinter import messagebox
 HOST = '192.168.0.30'
 PORT = 12345
 
-# Добавить уведомление о подключении и отключении юзера.
-# TODO: пофиксить двойную отправку сообщений (проблема в выводе через ткинтер)
+
 def receive():
     last_message = client.recv(1024).decode()
-    # Вот в этой строке
     message_list.insert(tkinter.END, last_message)
     while True:
         new_message = client.recv(1024).decode()
         if new_message != last_message and new_message.split(':')[0] == 'SYSTEM':
-            # И соответствено тут
             message_list.insert(tkinter.END, new_message)
             last_message = new_message
 
