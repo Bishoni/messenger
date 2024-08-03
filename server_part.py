@@ -5,15 +5,15 @@ HOST = '192.168.0.99'
 PORT = 12345
 clients = []
 
+
 # TODO: Сделать корректный вывод в консоль сервера о отправке сообщений. И от отключений пользователей
 def handle_client(client, addr):
     clients.append(client)
     try:
         while True:
             message = client.recv(1024).decode()
-            print(f'{addr} отправил сообщение {message}')
+            print(f'{addr} отправил сообщение {message.split(":")[1]}')
             if message == 'disconnect':
-                print(f'Клиент {addr} разорвал настоящее соединение')
                 break
             else:
                 broadcast(message, client)
@@ -21,7 +21,7 @@ def handle_client(client, addr):
         print(e)
     finally:
         # Вот в этой строке
-        print(f"Соединение было разорвано с {addr}")
+        print(f"Соединение было принудительно разорвано с {addr}")
         clients.remove(client)
         client.close()
 
@@ -41,7 +41,7 @@ def start_server():
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server.bind((HOST, PORT))
     server.listen()
-    print(f'Сервер ожидает подключение по HOST: {HOST}; PORT: {PORT}')
+    print(f'Сервер ожидает подключение по IP: {HOST}; PORT: {PORT}')
 
     while True:
         client, addr = server.accept()
