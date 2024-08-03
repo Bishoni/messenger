@@ -19,10 +19,11 @@ def handle_client(client, addr):
             else:
                 print(f'Участник \'{username}\' отправил сообщение: \'{message}\' ')
                 broadcast(username, message, client)
-    except IndexError as e:
-        leave_user(str(username), send_console=True)
+    except Exception as e:
+        print(e)
     finally:
         print(f"LOG: Соединение было разорвано с {addr}")
+        send_leave_user(username)
         clients.remove(client)
         client.close()
 
@@ -37,11 +38,16 @@ def broadcast(username, message, sender=None):
                 clients.remove(client)
 
 
-def leave_user(username, send_console):
+def send_leave_user(username, send_console=True):
     broadcast('SYSTEM', f'Участник \'{username}\' отключился')
     if send_console:
         print('SYSTEM:', f'Участник \'{username}\' отключился')
 
+
+def send_connect_user(send_console=True):
+    broadcast('SYSTEM', f'Подключился новый участник')
+    if send_console:
+        print('SYSTEM:', f'Подключился новый участник')
 
 def start_server():
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -52,9 +58,9 @@ def start_server():
     while True:
         client, addr = server.accept()
         clients.append(client)
+        send_connect_user()
         print(f"LOG: Соединение успешно установлено с {addr}")
         thread = threading.Thread(target=handle_client, args=(client, addr))
         thread.start()
-
 
 start_server()
