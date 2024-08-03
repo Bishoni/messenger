@@ -1,6 +1,8 @@
 import socket
 import threading
 import tkinter
+from tkinter import messagebox
+
 
 HOST = '192.168.0.30'
 PORT = 12345
@@ -13,7 +15,7 @@ def receive():
     message_list.insert(tkinter.END, last_message)
     while True:
         new_message = client.recv(1024).decode()
-        if new_message != last_message:
+        if new_message != last_message and new_message.split(':')[0] == 'SYSTEM':
             # И соответствено тут
             message_list.insert(tkinter.END, new_message)
             last_message = new_message
@@ -66,5 +68,13 @@ disconnect_button.pack()
 
 receive_thread = threading.Thread(target=receive, daemon=True)
 receive_thread.start()
+
+
+def on_closing():
+    if messagebox.askokcancel("Завершить чат", "Вы хотите выйти из чата?"):
+        disconnect()
+
+
+window.protocol("WM_DELETE_WINDOW", on_closing)
 
 window.mainloop()

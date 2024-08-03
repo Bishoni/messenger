@@ -1,6 +1,8 @@
 import socket
 import threading
 import tkinter
+from tkinter import messagebox
+
 
 HOST = '192.168.0.30'
 PORT = 12345
@@ -66,5 +68,13 @@ disconnect_button.pack()
 
 receive_thread = threading.Thread(target=receive, daemon=True)
 receive_thread.start()
+
+
+def on_closing():
+    if messagebox.askokcancel("Завершить чат", "Вы хотите выйти из чата?"):
+        disconnect()
+
+
+window.protocol("WM_DELETE_WINDOW", on_closing)
 
 window.mainloop()
