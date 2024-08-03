@@ -23,7 +23,7 @@ def handle_client(client, addr):
         print(e)
     finally:
         print(f"LOG: Соединение было разорвано с {addr}")
-        send_leave_user(username)
+        send_leave_user(username, addr)
         clients.remove(client)
         client.close()
 
@@ -38,16 +38,17 @@ def broadcast(username, message, sender=None):
                 clients.remove(client)
 
 
-def send_leave_user(username, send_console=True):
-    broadcast('SYSTEM', f'Участник \'{username}\' отключился')
+def send_leave_user(username, addr, send_console=True):
+    broadcast('SYSTEM', f'Участник \'{username}\' отключился {addr}')
     if send_console:
-        print('SYSTEM:', f'Участник \'{username}\' отключился')
+        print('SYSTEM:', f'Участник \'{username}\' отключился {addr}')
 
 
-def send_connect_user(send_console=True):
-    broadcast('SYSTEM', f'Подключился новый участник')
+def send_connect_user(addr, send_console=True):
+    broadcast('SYSTEM', f'Подключился новый участник {addr}')
     if send_console:
-        print('SYSTEM:', f'Подключился новый участник')
+        print('SYSTEM:', f'Подключился новый участник {addr}')
+
 
 def start_server():
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -58,7 +59,7 @@ def start_server():
     while True:
         client, addr = server.accept()
         clients.append(client)
-        send_connect_user()
+        send_connect_user(addr)
         print(f"LOG: Соединение успешно установлено с {addr}")
         thread = threading.Thread(target=handle_client, args=(client, addr))
         thread.start()

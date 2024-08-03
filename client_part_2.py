@@ -4,7 +4,7 @@ import tkinter
 from tkinter import messagebox
 
 
-HOST = '192.168.0.30'
+HOST = '192.168.0.99'
 PORT = 12345
 
 
@@ -13,7 +13,7 @@ def receive():
     message_list.insert(tkinter.END, last_message)
     while True:
         new_message = client.recv(1024).decode()
-        if new_message != last_message and new_message.split(':')[0] == 'SYSTEM':
+        if new_message != last_message:
             message_list.insert(tkinter.END, new_message)
             last_message = new_message
 
