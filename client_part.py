@@ -2,7 +2,7 @@ import socket
 import threading
 import tkinter
 
-HOST = '192.168.0.99'
+HOST = '192.168.0.30'
 PORT = 12345
 
 # Добавить уведомление о подключении и отключении юзера.
@@ -27,15 +27,13 @@ def send():
 
 
 def disconnect():
-    client.send('disconnect'.encode())
+    client.send(f'{set_username()}:disconnect'.encode())
     client.close()
     window.quit()
 
 
 def set_username():
-    username = set_name.get()
-    if not username:
-        username = f'Введите имя пользователя'
+    username = set_name.get() if set_name.get() else 'Введите имя пользователя'
     return username
 
 
