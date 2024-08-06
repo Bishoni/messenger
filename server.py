@@ -11,7 +11,7 @@ telegramUsers = []
 def update_from_file(query_var=None):
     '''Обновление динамических переменных. Работает через выполнение заданного кода'''
 
-    with open('server_cfg.cfg', 'r', encoding='utf-8') as file:
+    with open('server.cfg', 'r', encoding='utf-8') as file:
         for line in file.readlines():
             if line.strip():
                 name_var, value = line.split('=', 1)
@@ -144,7 +144,7 @@ async def start_local_server():
     '''Создание сервера для локальных подключений'''
 
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    with open('connect_cfg.cfg', 'r', encoding='utf-8') as connect_file:
+    with open('connect.cfg', 'r', encoding='utf-8') as connect_file:
         HOST, PORT = map(lambda var: var.split('=')[1].strip(), connect_file.readlines())
     server.bind((HOST, int(PORT)))
     server.listen()

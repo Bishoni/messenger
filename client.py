@@ -5,7 +5,7 @@ from tkinter import messagebox
 
 
 def update_from_file(query_var=None):
-    with open('client_cfg.cfg', 'r', encoding='utf-8') as file:
+    with open('client.cfg', 'r', encoding='utf-8') as file:
         for line in file.readlines():
             if line.strip():
                 name_var, value = line.split('=', 1)
@@ -57,7 +57,7 @@ def set_username():
 
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-with open('connect_cfg.cfg', 'r', encoding='utf-8') as connect_file:
+with open('connect.cfg', 'r', encoding='utf-8') as connect_file:
     HOST, PORT = map(lambda var: var.split('=')[1].strip(), connect_file.readlines())
     client.connect((HOST, int(PORT)))
 
