@@ -59,9 +59,11 @@ def send_connect_user(addr, send_console=True):
 
 def start_server():
     server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    HOST = eval(update_from_file('HOST'))
-    PORT = int(update_from_file('PORT'))
-    server.bind((HOST, PORT))
+
+    with open('connect_cfg.cfg', 'r', encoding='utf-8') as connect_file:
+        HOST, PORT = map(lambda var: var.split('=')[1].strip(), connect_file.readlines())
+
+    server.bind((eval(HOST), int(PORT)))
     server.listen()
     print(eval(update_from_file('wait_connect_log')))
 

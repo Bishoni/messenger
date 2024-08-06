@@ -4,13 +4,17 @@ import tkinter
 from tkinter import messagebox
 
 
-HOST = '192.168.0.99'
-PORT = 12345
+def update_from_file(query_var=None):
+    with open('client_cfg.cfg', 'r', encoding='utf-8') as file:
+        for line in file.readlines():
+            if line.strip():
+                name_var, value = line.split('=', 1)
+                if name_var.strip() == query_var:
+                    return value.strip()
 
 
 def receive():
-    last_message = client.recv(1024).decode()
-    message_list.insert(tkinter.END, last_message)
+    last_message = None
     while True:
         new_message = client.recv(1024).decode()
         if new_message != last_message:
@@ -32,15 +36,17 @@ def disconnect():
 
 
 def set_username():
-    username = set_name.get() if set_name.get() else 'Введите имя пользователя'
+    username = set_name.get() if set_name.get() else eval(update_from_file('default_username'))
     return username
 
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client.connect((HOST, PORT))
+with open('connect_cfg.cfg', 'r', encoding='utf-8') as connect_file:
+    HOST, PORT = map(lambda var: var.split('=')[1].strip(), connect_file.readlines())
+    client.connect((HOST, int(PORT)))
 
 window = tkinter.Tk()
-window.title("Мессенджер")
+window.title(eval(update_from_file('title_window_name')))
 
 set_name = tkinter.StringVar()
 set_name.set(set_username())
@@ -51,16 +57,15 @@ message_list = tkinter.Listbox(window)
 message_list.pack()
 
 my_message = tkinter.StringVar()
-my_message.set("Введите сообщение")
+my_message.set(eval(update_from_file('default_input_msg')))
 message_entry = tkinter.Entry(window, textvariable=my_message)
 message_entry.pack()
 message_entry.bind("<Return>", send)
 
-
-send_button = tkinter.Button(window, text="Отправить", command=send)
+send_button = tkinter.Button(window, text=eval(update_from_file('button_send_msg')), command=send)
 send_button.pack()
 
-disconnect_button = tkinter.Button(window, text='Отключиться', command=disconnect)
+disconnect_button = tkinter.Button(window, text=eval(update_from_file('button_disconnect')), command=disconnect)
 disconnect_button.pack()
 
 receive_thread = threading.Thread(target=receive, daemon=True)
@@ -68,7 +73,7 @@ receive_thread.start()
 
 
 def on_closing():
-    if messagebox.askokcancel("Завершить чат", "Вы хотите выйти из чата?"):
+    if messagebox.askokcancel(str(update_from_file('warning_disconnect')), eval(update_from_file('warning_button_disconnect'))):
         disconnect()
 
 
