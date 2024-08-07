@@ -6,7 +6,6 @@ import asyncio
 localUsers = []
 telegramUsers = []
 
-# TODO: сделать уведомление пользователю о том, что он подключился к чату
 
 def update_from_file(query_var=None):
     '''Обновление динамических переменных. Работает через выполнение заданного кода'''
