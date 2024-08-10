@@ -2,20 +2,11 @@ import socket
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import Command
 import asyncio
+from server_cfg import *
+from connect_cfg import *
 
 localUsers = []
 telegramUsers = []
-
-
-def update_from_file(query_var=None):
-    '''Обновление динамических переменных. Работает через выполнение заданного кода'''
-
-    with open('server.cfg', 'r', encoding='utf-8') as file:
-        for line in file.readlines():
-            if line.strip():
-                name_var, value = line.split('=', 1)
-                if name_var.strip() == query_var:
-                    return value.strip()
 
 
 async def handle_client(client, addr):
@@ -32,14 +23,14 @@ async def handle_client(client, addr):
             username = input_data.split(':')[0]
             message = str(input_data.split(':')[1]).lstrip()
             if message == 'disconnect':
-                print(eval(update_from_file('disconnect_local_log')))
+                print(disconnect_local_log.format(username))
                 break
             else:
                 await broadcast(username, message, client)
     except Exception as e:
         print(e)
     finally:
-        print(eval(update_from_file('disconnect_finally_log')))
+        print(disconnect_finally_log.format(addr))
         await send_leave_user(username, addr)
         localUsers.remove(client)
         client.close()
@@ -48,14 +39,14 @@ async def handle_client(client, addr):
 async def broadcast(username, message, sender=None):
     '''Непосредственная отправка сообщений'''
 
-    if username != eval(update_from_file('system_msg_name')):
-        print(eval(update_from_file('send_msg_log')))
+    if username != system_msg_name:
+        print(send_msg_log.format(username, message))
     for user_id in telegramUsers:
         if user_id != sender:
             try:
                 await bot.send_message(user_id, f'{username}: {message}')
             except Exception as e:
-                print(eval(update_from_file('tg_msg_error_log')))
+                print(tg_msg_error_log.format(user_id, e))
                 localUsers.remove(user_id)
 
     for client in localUsers:
@@ -63,7 +54,7 @@ async def broadcast(username, message, sender=None):
             try:
                 client.send(f'{username}: {message}'.encode())
             except Exception as e:
-                print(eval(update_from_file('local_msg_error_log')))
+                print(local_msg_error_log.format("addr", e))
                 client.close()
                 localUsers.remove(client)
 
@@ -71,21 +62,21 @@ async def broadcast(username, message, sender=None):
 async def send_leave_user(username, addr, send_console=True):
     '''Отправка сообщений всем участникам чата, но не отключившемуся, об отключении участника'''
 
-    await broadcast(eval(update_from_file('system_msg_name')), eval(update_from_file('disconnect_chat')))
+    await broadcast(system_msg_name, disconnect_chat.format(username, addr))
     if send_console:
-        print(eval(update_from_file('disconnect_chat_log')))
+        print(disconnect_chat_log.format(username, addr))
 
 
-# TODO: cделать уведомление пользователю о том, что он успешно подключён к чату (отдельно сообщение юзеру)
+# TODO: cделать уведомление пользователю о том, что он успешно подключён к чату (отдельноe сообщение юзеру)
 async def send_connect_user(addr, send_console=True):
     '''Отправка сообщений всем участникам чата, в том числе и присоединившемуся, о присоединении участника'''
 
-    await broadcast(eval(update_from_file('system_msg_name')), eval(update_from_file('connect_chat')))
+    await broadcast(system_msg_name, connect_chat.format(addr))
     if send_console:
-        print(eval(update_from_file('connect_log')))
+        print(connect_log.format(addr))
 
 
-bot = Bot(eval(update_from_file('token_tg')))
+bot = Bot(token_tg)
 db = Dispatcher()
 
 
@@ -94,9 +85,9 @@ async def start(message: types.Message):
     '''Реакция телеграмм бота на команду /start.
     Обрабатывается приветствие для пользователя'''
     if message.from_user.id not in telegramUsers:
-        await bot.send_message(message.from_user.id, eval(update_from_file('send_false_start_tg')))
+        await bot.send_message(message.from_user.id, send_false_start_tg.format(message.from_user.first_name))
     else:
-        await bot.send_message(message.from_user.id, eval(update_from_file('send_true_start_tg')))
+        await bot.send_message(message.from_user.id, send_true_start_tg.format(message.from_user.first_name))
 
 
 @db.message(Command("connect"))
@@ -105,12 +96,12 @@ async def start(message: types.Message):
     Обрабатывается подключения пользователя к чату через телеграмм'''
 
     if message.from_user.id not in telegramUsers:
-        await message.answer(eval(update_from_file('send_connect_tg')))
+        await message.answer(send_connect_tg)
         telegramUsers.append(message.from_user.id)
         await send_connect_user(message.from_user.id)
-        print(eval(update_from_file('connect_success_tg_log')))
+        print(connect_success_tg_log.format(message.from_user.id))
     else:
-        await bot.send_message(message.from_user.id, eval(update_from_file('connect_error_tg')))
+        await bot.send_message(message.from_user.id, connect_error_tg)
 
 
 @db.message(Command("disconnect"))
@@ -122,12 +113,12 @@ async def start(message: types.Message):
         username = message.from_user.first_name
         addr = message.from_user.id
         telegramUsers.remove(message.from_user.id)
-        print(eval(update_from_file('disconnect_tg_log')))
-        await broadcast(eval(update_from_file('system_msg_name')), eval(update_from_file('disconnect_all_tg')))
-        await bot.send_message(addr, eval(update_from_file('disconnect_user_tg')))
-        print(f"{eval(update_from_file('system_msg_name'))}:", eval(update_from_file('disconnect_chat')))
+        print(disconnect_tg_log.format(message.from_user.id))
+        await broadcast(system_msg_name, disconnect_all_tg.format(message.from_user.first_name, message.from_user.id))
+        await bot.send_message(addr, disconnect_user_tg)
+        print(system_msg_name, disconnect_chat_log.format(username, addr))
     else:
-        await bot.send_message(message.from_user.id, eval(update_from_file('disconnect_error_tg')))
+        await bot.send_message(message.from_user.id, disconnect_error_tg)
 
 
 @db.message()
@@ -136,7 +127,7 @@ async def user_send_msg(message: types.Message):
     if message.from_user.id in telegramUsers:
         await broadcast(message.from_user.first_name, message.text, message.from_user.id)
     else:
-        await bot.send_message(message.from_user.id, eval(update_from_file('connect_not_established')))
+        await bot.send_message(message.from_user.id, connect_not_established)
 
 
 async def start_local_server():
@@ -147,10 +138,10 @@ async def start_local_server():
         HOST, PORT = map(lambda var: var.split('=')[1].strip(), connect_file.readlines())
     server.bind((HOST, int(PORT)))
     server.listen()
-    print(eval(update_from_file('wait_connect_log')))
+    print(wait_connect_log.format(HOST, PORT))
     while True:
         client, addr = await asyncio.get_event_loop().run_in_executor(None, server.accept)
-        print(eval(update_from_file('connect_success_local_log')))
+        print(connect_success_local_log.format(addr))
         asyncio.create_task(handle_client(client, addr))
 
 
