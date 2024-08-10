@@ -3,6 +3,7 @@ import threading
 import tkinter
 from tkinter import messagebox
 from client_cfg import *
+from connect_cfg import HOST, PORT
 
 
 def receive():
@@ -49,9 +50,7 @@ def set_username():
 
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-with open('connect.cfg', 'r', encoding='utf-8') as connect_file:
-    HOST, PORT = map(lambda var: var.split('=')[1].strip(), connect_file.readlines())
-    client.connect((HOST, int(PORT)))
+client.connect((HOST, PORT))
 
 window = tkinter.Tk()
 window.title(title_window_name)
@@ -74,6 +73,7 @@ send_button.pack()
 
 disconnect_button = tkinter.Button(window, button_disconnect, command=disconnect)
 disconnect_button.pack()
+
 
 receive_thread = threading.Thread(target=receive, daemon=True)
 receive_thread.start()
