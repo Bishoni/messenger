@@ -1,3 +1,4 @@
+token_tg = ''
 system_msg_name = 'SYSTEM'
 
 wait_connect_log = 'LOG: Сервер ожидает подключение по IP: {}; PORT: {}'

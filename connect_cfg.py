@@ -1,3 +1,2 @@
 HOST = '192.168.0.99'
 PORT = 12345
-token_tg = '6720272747:AAFbSwmN65PlkWDr4JVqMFHxti9HQ5tat_0'
