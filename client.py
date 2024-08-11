@@ -68,10 +68,10 @@ message_entry = tkinter.Entry(window, textvariable=my_message)
 message_entry.pack()
 message_entry.bind("<Return>", lambda event: send())
 
-send_button = tkinter.Button(window, button_send_msg, command=send)
+send_button = tkinter.Button(window, text=button_send_msg, command=send)
 send_button.pack()
 
-disconnect_button = tkinter.Button(window, button_disconnect, command=disconnect)
+disconnect_button = tkinter.Button(window, text=button_disconnect, command=disconnect)
 disconnect_button.pack()
 
 
