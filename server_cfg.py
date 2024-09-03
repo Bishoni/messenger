@@ -1,4 +1,4 @@
-token_tg = ''
+token_tg = '6720272747:AAG_mZGo3goAH1FMkUHZnSrgJF5xsBR0c2E'
 system_msg_name = 'SYSTEM'
 
 wait_connect_log = 'LOG: Сервер ожидает подключение по IP: {}; PORT: {}'
@@ -15,7 +15,7 @@ send_success_connect_chat = 'Успешное подключение к чату
 
 send_msg_log = 'Участник \'{}\' отправил сообщение: \'{}\' '
 
-disconnect_local_log = 'LOG: Телеграмм участник \'{}\' разорвал настоящее соединение'
+disconnect_local_log = 'LOG: Локальный участник \'{}\' разорвал настоящее соединение'
 disconnect_finally_log = "LOG: Соединение было разорвано с {}"
 disconnect_chat = 'Участник \'{}\' отключился {}'
 disconnect_chat_log = 'SYSTEM: Участник \'{}\' отключился {}'
